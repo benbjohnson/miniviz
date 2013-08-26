@@ -11,6 +11,9 @@ Gem::Specification.new do |s|
   s.summary     = "A simplified interface to GraphViz for laying out clusters, nodes and edges."
   s.description = "A simplified interface to GraphViz for laying out clusters, nodes and edges."
 
+  s.add_dependency('ruby-graphviz', '~> 1.0')
+  s.add_dependency('nokogiri', '~> 1.6')
+
   s.files = Dir["lib/**/*"] + ["LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
   s.require_path = 'lib'

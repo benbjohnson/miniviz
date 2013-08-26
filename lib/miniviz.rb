@@ -1,3 +1,6 @@
+require 'nokogiri'
+require 'graphviz'
+
 class Miniviz
   class Error < StandardError; end
 

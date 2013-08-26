@@ -3,3 +3,4 @@ gemspec
 
 gem 'rake'
 gem 'simplecov', :require => false
+gem 'pry'

@@ -2,21 +2,35 @@ PATH
   remote: .
   specs:
     miniviz (0.1.0)
+      nokogiri (~> 1.6)
+      ruby-graphviz (~> 1.0)
 
 GEM
   remote: http://rubygems.org/
   specs:
+    coderay (1.0.9)
+    method_source (0.8.1)
+    mini_portile (0.5.0)
     multi_json (1.7.9)
+    nokogiri (1.6.0)
+      mini_portile (~> 0.5.0)
+    pry (0.9.12.2)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
     rake (10.1.0)
+    ruby-graphviz (1.0.9)
     simplecov (0.7.1)
       multi_json (~> 1.0)
       simplecov-html (~> 0.7.1)
     simplecov-html (0.7.1)
+    slop (3.4.5)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   miniviz!
+  pry
   rake
   simplecov
