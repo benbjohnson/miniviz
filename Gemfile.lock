@@ -1,0 +1,22 @@
+PATH
+  remote: .
+  specs:
+    miniviz (0.1.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    multi_json (1.7.9)
+    rake (10.1.0)
+    simplecov (0.7.1)
+      multi_json (~> 1.0)
+      simplecov-html (~> 0.7.1)
+    simplecov-html (0.7.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  miniviz!
+  rake
+  simplecov
