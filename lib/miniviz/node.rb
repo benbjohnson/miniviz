@@ -11,8 +11,8 @@ class Miniviz
       @graph = options[:graph]
       @id = options[:id]
       @label = options[:label]
-      @children = []
-      self.add_children(options[:children] || [])
+      @nodes = []
+      self.add_nodes(options[:nodes] || [])
     end
 
 
@@ -35,7 +35,7 @@ class Miniviz
     attr_accessor :label
 
     # A list of child nodes within this node.
-    attr_accessor :children
+    attr_accessor :nodes
 
     # The X coordinate of the node.
     attr_accessor :x
@@ -57,18 +57,18 @@ class Miniviz
     ##########################################################################
 
     ####################################
-    # Children
+    # Nodes
     ####################################
 
-    def add_child(node)
+    def add_node(node)
       node = Node.new(node) unless node.is_a?(Node)
       node.graph = graph
-      @children << node
+      @nodes << node
       return node
     end
 
-    def add_children(nodes)
-      nodes.to_a.each {|node| add_child(node) }
+    def add_nodes(nodes)
+      nodes.to_a.each {|node| add_node(node) }
     end
 
     def get_node(node_id)
@@ -76,8 +76,8 @@ class Miniviz
         return self
       end
 
-      children.each do |child|
-        n = child.get_node(node_id)
+      nodes.each do |node|
+        n = node.get_node(node_id)
         return n unless n.nil?
       end
 
@@ -85,7 +85,7 @@ class Miniviz
     end
 
     def all_nodes()
-      return children.inject([self]) {|r,child| r.concat(child.all_nodes)}
+      return nodes.inject([self]) {|r,node| r.concat(node.all_nodes)}
     end
 
     ####################################
@@ -99,7 +99,7 @@ class Miniviz
         errors << "Node identifier cannot be blank"
       end
 
-      children.each {|child| errors.concat(child.validate) }
+      nodes.each {|node| errors.concat(node.validate) }
 
       return errors
     end
@@ -117,7 +117,7 @@ class Miniviz
       hash['y'] = y unless y.nil?
       hash['width'] = width unless width.nil?
       hash['height'] = height unless height.nil?
-      hash['children'] = children.to_a.map{|n| n.to_hash()} if children.to_a.length > 0
+      hash['nodes'] = nodes.to_a.map{|n| n.to_hash()} if nodes.to_a.length > 0
       return hash
     end
 

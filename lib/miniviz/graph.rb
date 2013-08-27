@@ -212,7 +212,7 @@ class Miniviz
       node.gv = g.add_nodes(node.id)
       node.gv[:shape] = "box"
 
-      node.children.each do |child|
+      node.nodes.each do |child|
         add_layout_node(g, child)
       end
     end

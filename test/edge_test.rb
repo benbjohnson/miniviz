@@ -6,7 +6,7 @@ class TestEdge < MiniTest::Unit::TestCase
   end
 
   def test_missing_source_node
-    @graph.add_nodes([{id:"A", children:[{id:"B"}]}])
+    @graph.add_nodes([{id:"A", nodes:[{id:"B"}]}])
     @graph.add_edges([{source:"B", target:"C"}])
     assert_equal(["Edge target not found: 'C'"], @graph.validate())
   end
