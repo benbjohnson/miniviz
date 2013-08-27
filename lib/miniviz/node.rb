@@ -37,6 +37,18 @@ class Miniviz
     # A list of child nodes within this node.
     attr_accessor :children
 
+    # The X coordinate of the node.
+    attr_accessor :x
+
+    # The Y coordinate of the node.
+    attr_accessor :y
+
+    # The width of the node.
+    attr_accessor :width
+
+    # The height of the node.
+    attr_accessor :height
+
 
     ##########################################################################
     #
@@ -93,11 +105,44 @@ class Miniviz
     end
 
     ####################################
+    # Encoding
+    ####################################
+
+    # Encodes the node into a hash.
+    def to_hash(*a)
+      hash = {}
+      hash['id'] = id
+      hash['label'] = label unless label.nil?
+      hash['x'] = x unless x.nil?
+      hash['y'] = y unless y.nil?
+      hash['width'] = width unless width.nil?
+      hash['height'] = height unless height.nil?
+      hash['children'] = children.to_a.map{|n| n.to_hash()} if children.to_a.length > 0
+      return hash
+    end
+
+    def as_json(*a); return to_hash(*a); end
+    def to_json(*a); return as_json(*a).to_json; end
+
+    ####################################
+    # SVG
+    ####################################
+
+    def to_svg
+      output = []
+      output << "<g>"
+      output << "<rect fill=\"none\" stroke=\"black\" x=\"#{x}\" y=\"#{y}\" width=\"#{width}\" height=\"#{height}\"/>"
+      output << "</g>"
+      return output.join("\n")
+    end
+
+    ####################################
     # Layout
     ####################################
 
     def extract_layout_from_svg(element)
-      # TODO: Extract x,y and width,height.
+      self.x, self.y, self.width, self.height = Miniviz::Svg.points_to_rect(graph, element.at_css("polygon")["points"])
+      return nil
     end
   end
 end

@@ -15,6 +15,8 @@ class TestGraph < MiniTest::Unit::TestCase
       {source:"A", target:"B"},
       {source:"B", target:"C"},
       ])
-    assert_equal({foo: "bar"}, @graph.layout())
+    @graph.layout()
+    IO.write("/tmp/miniviz.out.svg", @graph.to_svg())
+    assert_equal({foo: "bar"}, @graph.to_hash)
   end
 end

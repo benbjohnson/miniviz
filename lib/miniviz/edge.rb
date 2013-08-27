@@ -46,6 +46,12 @@ class Miniviz
     # The label attached to the edge.
     attr_accessor :label
 
+    # The SVG path.
+    attr_accessor :d
+
+    # The SVG arrowhead polygon points.
+    attr_accessor :arrowhead
+
 
     ##########################################################################
     #
@@ -71,11 +77,43 @@ class Miniviz
     end
 
     ####################################
+    # Encoding
+    ####################################
+
+    # Encodes the edge into a hash.
+    def to_hash(*a)
+      hash = {
+        'source' => source,
+        'target' => target,
+      }
+      hash['label'] = label unless label.nil?
+      return hash
+    end
+
+    def as_json(*a); return to_hash(*a); end
+    def to_json(*a); return as_json(*a).to_json; end
+
+    ####################################
+    # SVG
+    ####################################
+
+    def to_svg
+      output = []
+      output << "<g>"
+      output << "<path fill=\"none\" stroke=\"black\" d=\"#{d}\"/>"
+      output << "<polygon fill=\"black\" stroke=\"black\" points=\"#{arrowhead}\"/>"
+      output << "</g>"
+      return output.join("\n")
+    end
+
+    ####################################
     # Layout
     ####################################
 
     def extract_layout_from_svg(element)
-      # TODO: Extract path information.
+      self.d = Miniviz::Svg.d(graph, element.at_css("path")["d"])
+      self.arrowhead = Miniviz::Svg.d(graph, element.at_css("polygon")["points"])
+      return nil
     end
   end
 end

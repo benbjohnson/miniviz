@@ -10,7 +10,9 @@ class Miniviz
 
     # Ease of use function for building a graph and generating its layout.
     def self.layout(options={})
-      return Graph.new(options).layout()
+      graph = Graph.new(options)
+      graph.layout()
+      return graph.as_json()
     end
 
 
@@ -122,7 +124,7 @@ class Miniviz
       svg = generate_svg_layout(g)
       extract_layout_from_svg(svg)
 
-      return {nodes:nodes, edges:edges}
+      return nil
     end
 
     def validate()
@@ -148,6 +150,53 @@ class Miniviz
         add_layout_edge(g, node)
       end
       return g
+    end
+
+
+    ####################################
+    # Encoding
+    ####################################
+
+    # Encodes the graph into a hash.
+    def to_hash(*a)
+      {
+        'width' => width,
+        'height' => height,
+        'nodes' => nodes.to_a.map{|n| n.to_hash()},
+        'edges' => edges.to_a.map{|e| e.to_hash()},
+      }
+    end
+
+    def as_json(*a); return to_hash(*a); end
+    def to_json(*a); return as_json(*a).to_json; end
+
+
+    ####################################
+    # SVG
+    ####################################
+
+    def to_svg
+      output = []
+      output << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      output << "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"#{width+(PADDING*2)}\" height=\"#{height+(PADDING*2)}\">"
+      edges.each do |edge|
+        output << edge.to_svg()
+      end
+      nodes.each do |node|
+        output << node.to_svg()
+      end
+      output << "</svg>"
+      return output.join("\n")
+    end
+
+
+    ####################################
+    # Utility
+    ####################################
+
+    # Inverts the graphviz y coordinate based on the height of the graph.
+    def invert_y(value)
+      height + value
     end
 
 

@@ -2,6 +2,8 @@ require 'nokogiri'
 require 'graphviz'
 
 class Miniviz
+  PADDING = 4
+
   class Error < StandardError; end
 
   def self.symbolize_keys!(hash)
@@ -17,4 +19,5 @@ end
 require 'miniviz/graph'
 require 'miniviz/node'
 require 'miniviz/edge'
+require 'miniviz/svg'
 require 'miniviz/version'
