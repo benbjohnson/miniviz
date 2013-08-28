@@ -49,6 +49,13 @@ class Miniviz
     # The height of the node.
     attr_accessor :height
 
+    # The X coordinate of the node label.
+    attr_accessor :label_x
+
+    # The Y coordinate of the node label.
+    attr_accessor :label_y
+
+
 
     ##########################################################################
     #
@@ -117,6 +124,8 @@ class Miniviz
       hash['y'] = y unless y.nil?
       hash['width'] = width unless width.nil?
       hash['height'] = height unless height.nil?
+      hash['label_x'] = label_x unless label_x.nil?
+      hash['label_y'] = label_y unless label_y.nil?
       hash['nodes'] = nodes.to_a.map{|n| n.to_hash()} if nodes.to_a.length > 0
       return hash
     end
@@ -132,6 +141,7 @@ class Miniviz
       output = []
       output << "<g>"
       output << "<rect fill=\"none\" stroke=\"black\" x=\"#{x}\" y=\"#{y}\" width=\"#{width}\" height=\"#{height}\"/>"
+      output << "<text text-anchor=\"middle\" x=\"#{label_x}\" y=\"#{label_y}\" font-family=\"#{graph.fontname}\" font-size=\"#{graph.fontsize}pt\">#{label || id}</text>"
       output << "</g>"
       return output.join("\n")
     end
@@ -142,6 +152,7 @@ class Miniviz
 
     def extract_layout_from_svg(element)
       self.x, self.y, self.width, self.height = Miniviz::Svg.points_to_rect(graph, element.at_css("polygon")["points"])
+      self.label_x, self.label_y = Miniviz::Svg.xy(graph, element.at_css("text"))
       return nil
     end
   end

@@ -24,6 +24,16 @@ class Miniviz
 
     def initialize(options={})
       Miniviz.symbolize_keys!(options)
+      options = {
+        rankdir: "LR",
+        fontname: "Times,serif",
+        fontsize: 14,
+        }.merge(options)
+
+      self.rankdir = options[:rankdir]
+      self.fontname = options[:fontname]
+      self.fontsize = options[:fontsize]
+
       @nodes, @edges = [], []
       self.add_nodes(options[:nodes] || [])
       self.add_edges(options[:edges] || [])
@@ -47,6 +57,15 @@ class Miniviz
 
     # The height of the graph.
     attr_accessor :height
+
+    # The orientation of the nodes ("LR", "RL", "TB", "BT").
+    attr_accessor :rankdir
+
+    # The font family used in the graph.
+    attr_accessor :fontname
+
+    # The font size, in points, used in the graph.
+    attr_accessor :fontsize
 
 
     ##########################################################################
@@ -143,6 +162,9 @@ class Miniviz
     # Generates a Graphviz graph from the nodes and edges.
     def to_graphviz()
       g = GraphViz.new(:G, :type => :digraph)
+      g[:rankdir] = rankdir
+      g[:fontname] = fontname
+      g[:fontsize] = fontsize
       nodes.each do |node|
         add_layout_node(g, node)
       end
@@ -196,7 +218,7 @@ class Miniviz
 
     # Inverts the graphviz y coordinate based on the height of the graph.
     def invert_y(value)
-      height + value
+      height + (value - (PADDING * PT2PX * 2))
     end
 
 
@@ -223,8 +245,10 @@ class Miniviz
 
     # Writes out the SVG layout to file and reads it back in as a string.
     def generate_svg_layout(g)
-      tmppath = Tempfile.open(['miniviz', '.svg']) {|f| f.path}
+      tmppath = Tempfile.open('miniviz') {|f| f.path}
+      tmppath += ".svg"
       begin
+        FileUtils.mkdir_p(File.dirname(tmppath))
         g.output(svg:tmppath)
         FileUtils.cp(tmppath, "/tmp/miniviz.test.svg")
         return IO.read(tmppath)
@@ -239,8 +263,8 @@ class Miniviz
       
       # Extract width and height from root node.
       root = svg.at_css("svg")
-      self.width = root["width"].to_f
-      self.height = root["height"].to_f
+      self.width = root["width"].to_f * PT2PX
+      self.height = root["height"].to_f * PT2PX
 
       svg.css(".node").each do |element|
         id = element.at_css("title").text().to_s

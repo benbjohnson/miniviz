@@ -2,6 +2,7 @@ require 'nokogiri'
 require 'graphviz'
 
 class Miniviz
+  PT2PX = 96.0 / 72.0
   PADDING = 4
 
   class Error < StandardError; end
