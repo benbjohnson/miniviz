@@ -156,6 +156,8 @@ class Miniviz
     def to_graphviz(g)
       self.gv = g.add_nodes(self.id)
       self.gv[:shape] = "box"
+      self.gv[:fontname] = graph.fontname
+      self.gv[:fontsize] = graph.fontsize.to_s
       self.gv[:label] = label unless label.to_s == ""
 
       self.nodes.each do |node|

@@ -175,8 +175,6 @@ class Miniviz
     def to_graphviz()
       g = GraphViz.new(:G, :type => :digraph)
       g[:rankdir] = rankdir
-      g[:fontname] = fontname
-      g[:fontsize] = fontsize.to_s
       nodes.each do |node|
         node.to_graphviz(g)
       end
