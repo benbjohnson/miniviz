@@ -26,7 +26,12 @@ class Miniviz
     attr_accessor :object
 
     # The graph that this node belongs to.
-    attr_accessor :graph
+    attr_reader :graph
+
+    def graph=(value)
+      @graph = value
+      nodes.to_a.each {|n| n.graph = value}
+    end
 
     # The Graphviz object for this node.
     attr_accessor :gv
@@ -62,7 +67,13 @@ class Miniviz
     # The Y coordinate of the node label.
     attr_accessor :label_y
 
+    def is_cluster?
+      !nodes.empty?
+    end
 
+    def graphviz_id
+      (nodes.empty? ? "" : "cluster_") + self.id
+    end
 
     ##########################################################################
     #
@@ -86,7 +97,7 @@ class Miniviz
     end
 
     def get_node(node_id)
-      if node_id == id
+      if node_id == id || node_id == graphviz_id
         return self
       end
 
@@ -150,12 +161,20 @@ class Miniviz
       output << "<rect fill=\"none\" stroke=\"black\" x=\"#{x}\" y=\"#{y}\" width=\"#{width}\" height=\"#{height}\"/>"
       output << "<text text-anchor=\"middle\" x=\"#{label_x}\" y=\"#{label_y}\" font-family=\"#{graph.fontname}\" font-size=\"#{graph.fontsize}pt\">#{label || id}</text>"
       output << "</g>"
+      nodes.each do |node|
+        output << node.to_svg()
+      end
       return output.join("\n")
     end
 
     def to_graphviz(g)
-      self.gv = g.add_nodes(self.id)
-      self.gv[:shape] = "box"
+      if is_cluster?
+        self.gv = g.add_graph(graphviz_id)
+        g = self.gv
+      else
+        self.gv = g.add_nodes(graphviz_id)
+        self.gv[:shape] = "box"
+      end
       self.gv[:fontname] = graph.fontname
       self.gv[:fontsize] = graph.fontsize.to_s
       self.gv[:label] = label unless label.to_s == ""

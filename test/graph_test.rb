@@ -7,12 +7,29 @@ class TestGraph < MiniTest::Unit::TestCase
 
   def test_layout
     @graph.add_nodes([
-      {id:"A", label:"TEST NODE 1"},
+      {
+        id:"A",
+        label:"My Cluster",
+        nodes:[
+          {id:"A1"},
+          {id:"A2"},
+          {
+            id:"A3",
+            label:"Subcluster",
+            nodes:[
+              {id:"A3.1"},
+              {id:"A3.2"},
+            ]
+          }
+        ]
+      },
       {id:"B"},
       {id:"C"},
       ])
     @graph.add_edges([
-      {source:"A", target:"B"},
+      {source:"A2", target:"A1"},
+      {source:"A3.2", target:"A1"},
+      {source:"A1", target:"B"},
       {source:"B", target:"C"},
       ])
     @graph.fontsize = 20

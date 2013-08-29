@@ -247,6 +247,7 @@ class Miniviz
       begin
         FileUtils.mkdir_p(File.dirname(tmppath))
         g.output(svg:tmppath)
+        g.output(dot:"/tmp/miniviz.dot")
         FileUtils.cp(tmppath, "/tmp/miniviz.test.svg")
         return IO.read(tmppath)
       ensure
@@ -263,7 +264,7 @@ class Miniviz
       self.width = (root["width"].to_f * PT2PX).round(3)
       self.height = (root["height"].to_f * PT2PX).round(3)
 
-      svg.css(".node").each do |element|
+      svg.css(".node, .cluster").each do |element|
         id = element.at_css("title").text().to_s
         get_node(id).extract_layout_from_svg(element)
       end
