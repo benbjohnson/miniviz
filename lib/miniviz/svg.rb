@@ -3,15 +3,17 @@ class Miniviz
     # Normalizes a series of path points.
     def self.d(graph, value)
       value = value.gsub(/\s*([-0-9.]+)([, ]+)([-0-9.]+)\s*/) do
-        x, sep, y = $1.to_f * PT2PX, $2, graph.invert_y(($3.to_f * PT2PX))
-        " #{(x+(PADDING * PT2PX))}#{sep}#{(y+(PADDING * PT2PX))} "
+        x, sep, y = ($1.to_f * PT2PX), $2, graph.invert_y(($3.to_f * PT2PX))
+        " #{(x+(PADDING * PT2PX)).round(3)}#{sep}#{(y+(PADDING * PT2PX)).round(3)} "
       end
       return value.squeeze(" ").strip
     end
 
     # Normalizes the x and y attributes on an SVG node.
     def self.xy(graph, element)
-      return (element["x"].to_f+PADDING) * PT2PX, graph.invert_y((element["y"].to_f+PADDING) * PT2PX)
+      x = ((element["x"].to_f+PADDING) * PT2PX).round(3)
+      y = graph.invert_y((element["y"].to_f+PADDING) * PT2PX).round(3)
+      return x, y
     end
 
     # Normalizes a series of polygon points into a bounding box.
@@ -24,7 +26,7 @@ class Miniviz
         x2 = x if x2.nil? || x > x2
         y2 = y if y2.nil? || y > y2
       end
-      return (x1+(PADDING * PT2PX)), (y1+(PADDING * PT2PX)), (x2-x1), (y2-y1)
+      return (x1+(PADDING * PT2PX)).round(3), (y1+(PADDING * PT2PX)).round(3), (x2-x1).round(3), (y2-y1).round(3)
     end
   end
 end

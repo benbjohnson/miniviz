@@ -7,11 +7,12 @@ class Miniviz
     ##########################################################################
 
     def initialize(options={})
-      Miniviz.symbolize_keys!(options)
-      @graph = options[:graph]
-      @source = options[:source]
-      @target = options[:target]
-      @label = options[:label]
+      self.object = options[:object] || options
+
+      self.graph = options[:graph] || options["graph"]
+      self.source = options[:source] || options["source"]
+      self.target = options[:target] || options["target"]
+      self.label = options[:label] || options["label"]
     end
 
 
@@ -21,6 +22,9 @@ class Miniviz
     #
     ##########################################################################
 
+    # The original object that this edge is created from.
+    attr_accessor :object
+
     # The graph that this edge belongs to.
     attr_accessor :graph
 
@@ -28,7 +32,11 @@ class Miniviz
     attr_accessor :gv
 
     # The identifier for the source node.
-    attr_accessor :source
+    attr_reader :source
+
+    def source=(value)
+      @source = value.nil? ? nil : value.to_s
+    end
 
     def source_node
       return nil if graph.nil?
@@ -36,7 +44,11 @@ class Miniviz
     end
 
     # The identifier for the target node.
-    attr_accessor :target
+    attr_reader :target
+
+    def target=(value)
+      @target = value.nil? ? nil : value.to_s
+    end
 
     def target_node
       return nil if graph.nil?
@@ -109,6 +121,14 @@ class Miniviz
     ####################################
     # Layout
     ####################################
+
+    # Applies layout information to the source object.
+    def apply_layout(options={})
+      if object.is_a?(Hash)
+        object["d"] = d
+        object["arrowhead"] = arrowhead
+      end
+    end
 
     def extract_layout_from_svg(element)
       self.d = Miniviz::Svg.d(graph, element.at_css("path")["d"])

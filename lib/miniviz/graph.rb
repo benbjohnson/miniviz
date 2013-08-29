@@ -23,20 +23,14 @@ class Miniviz
     ##########################################################################
 
     def initialize(options={})
-      Miniviz.symbolize_keys!(options)
-      options = {
-        rankdir: "LR",
-        fontname: "Times,serif",
-        fontsize: 14,
-        }.merge(options)
-
-      self.rankdir = options[:rankdir]
-      self.fontname = options[:fontname]
-      self.fontsize = options[:fontsize]
+      self.object = options[:object] || options
+      self.rankdir = options[:rankdir] || options["rankdir"] || "TB"
+      self.fontname = options[:fontname] || options["fontname"] || "Times,serif"
+      self.fontsize = options[:fontsize] || options["fontsize"] || 14
 
       @nodes, @edges = [], []
-      self.add_nodes(options[:nodes] || [])
-      self.add_edges(options[:edges] || [])
+      self.add_nodes(options[:nodes] || options["nodes"] || [])
+      self.add_edges(options[:edges] || options["edges"] || [])
     end
 
 
@@ -45,6 +39,9 @@ class Miniviz
     # Attributes
     #
     ##########################################################################
+
+    # The original object that this graph is created from.
+    attr_accessor :object
 
     # A list of nodes in the graph.
     attr_accessor :nodes
@@ -135,7 +132,7 @@ class Miniviz
     def layout(options={})
       errors = validate()
       if errors.length > 0
-        return {errors: errors}
+        return errors
       end
 
       # Generate graphviz layout to file and read it back in.
@@ -143,7 +140,22 @@ class Miniviz
       svg = generate_svg_layout(g)
       extract_layout_from_svg(svg)
 
-      return nil
+      return []
+    end
+
+    # Applies the layout to the source objects.
+    def apply_layout(options={})
+      if object.is_a?(Hash)
+        object["width"] = width
+        object["height"] = height
+      end
+
+      nodes.each do |node|
+        node.apply_layout(options)
+      end
+      edges.each do |edge|
+        edge.apply_layout(options)
+      end
     end
 
     def validate()
@@ -164,12 +176,12 @@ class Miniviz
       g = GraphViz.new(:G, :type => :digraph)
       g[:rankdir] = rankdir
       g[:fontname] = fontname
-      g[:fontsize] = fontsize
+      g[:fontsize] = fontsize.to_s
       nodes.each do |node|
         add_layout_node(g, node)
       end
-      edges.each do |node|
-        add_layout_edge(g, node)
+      edges.each do |edge|
+        add_layout_edge(g, edge)
       end
       return g
     end
@@ -231,7 +243,7 @@ class Miniviz
     private
 
     def add_layout_node(g, node)
-      node.gv = g.add_nodes(node.id)
+      node.gv = g.add_nodes(node.id.to_s)
       node.gv[:shape] = "box"
 
       node.nodes.each do |child|
@@ -263,8 +275,8 @@ class Miniviz
       
       # Extract width and height from root node.
       root = svg.at_css("svg")
-      self.width = root["width"].to_f * PT2PX
-      self.height = root["height"].to_f * PT2PX
+      self.width = (root["width"].to_f * PT2PX).round(3)
+      self.height = (root["height"].to_f * PT2PX).round(3)
 
       svg.css(".node").each do |element|
         id = element.at_css("title").text().to_s

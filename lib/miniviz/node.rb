@@ -7,12 +7,12 @@ class Miniviz
     ##########################################################################
 
     def initialize(options={})
-      Miniviz.symbolize_keys!(options)
-      @graph = options[:graph]
-      @id = options[:id]
-      @label = options[:label]
-      @nodes = []
-      self.add_nodes(options[:nodes] || [])
+      self.object = options[:object] || options
+      self.graph = options[:graph] || options["graph"]
+      self.id = options[:id] || options["id"]
+      self.label = options[:label] || options["label"]
+      self.nodes = []
+      self.add_nodes(options[:nodes] || options["nodes"] || [])
     end
 
 
@@ -22,6 +22,9 @@ class Miniviz
     #
     ##########################################################################
 
+    # The original object that this node is created from.
+    attr_accessor :object
+
     # The graph that this node belongs to.
     attr_accessor :graph
 
@@ -29,7 +32,11 @@ class Miniviz
     attr_accessor :gv
 
     # The node identifier.
-    attr_accessor :id
+    attr_reader :id
+
+    def id=(value)
+      @id = value.nil? ? nil : value.to_s
+    end
 
     # The label used for the node.
     attr_accessor :label
@@ -149,6 +156,22 @@ class Miniviz
     ####################################
     # Layout
     ####################################
+
+    # Applies layout information to the source object.
+    def apply_layout(options={})
+      if object.is_a?(Hash)
+        object["x"] = x
+        object["y"] = y
+        object["width"] = width
+        object["height"] = height
+        object["label_x"] = label_x
+        object["label_y"] = label_y
+      end
+
+      nodes.each do |node|
+        node.apply_layout(options)
+      end
+    end
 
     def extract_layout_from_svg(element)
       self.x, self.y, self.width, self.height = Miniviz::Svg.points_to_rect(graph, element.at_css("polygon")["points"])
