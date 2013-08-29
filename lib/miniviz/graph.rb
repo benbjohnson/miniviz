@@ -178,10 +178,10 @@ class Miniviz
       g[:fontname] = fontname
       g[:fontsize] = fontsize.to_s
       nodes.each do |node|
-        add_layout_node(g, node)
+        node.to_graphviz(g)
       end
       edges.each do |edge|
-        add_layout_edge(g, edge)
+        edge.to_graphviz(g)
       end
       return g
     end
@@ -241,19 +241,6 @@ class Miniviz
     ##########################################################################
     
     private
-
-    def add_layout_node(g, node)
-      node.gv = g.add_nodes(node.id.to_s)
-      node.gv[:shape] = "box"
-
-      node.nodes.each do |child|
-        add_layout_node(g, child)
-      end
-    end
-
-    def add_layout_edge(g, edge)
-      edge.gv = g.add_edges(edge.source_node.gv, edge.target_node.gv)
-    end
 
     # Writes out the SVG layout to file and reads it back in as a string.
     def generate_svg_layout(g)

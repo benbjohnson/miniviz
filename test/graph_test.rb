@@ -7,7 +7,7 @@ class TestGraph < MiniTest::Unit::TestCase
 
   def test_layout
     @graph.add_nodes([
-      {id:"A"},
+      {id:"A", label:"TEST NODE 1"},
       {id:"B"},
       {id:"C"},
       ])

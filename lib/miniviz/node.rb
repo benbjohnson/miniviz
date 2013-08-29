@@ -153,6 +153,19 @@ class Miniviz
       return output.join("\n")
     end
 
+    def to_graphviz(g)
+      self.gv = g.add_nodes(self.id)
+      self.gv[:shape] = "box"
+      self.gv[:label] = label unless label.to_s == ""
+
+      self.nodes.each do |node|
+        node.to_graphviz(g)
+      end
+
+      self.gv
+    end
+
+
     ####################################
     # Layout
     ####################################

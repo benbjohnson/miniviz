@@ -118,6 +118,11 @@ class Miniviz
       return output.join("\n")
     end
 
+    def to_graphviz(g)
+      self.gv = g.add_edges(self.source_node.gv, self.target_node.gv)
+      self.gv
+    end
+
     ####################################
     # Layout
     ####################################
