@@ -29,7 +29,7 @@ class TestGraph < MiniTest::Unit::TestCase
     @graph.add_edges([
       {source:"A2", target:"A1"},
       {source:"A3.2", target:"A1"},
-      {source:"A1", target:"B"},
+      {source:"A1", target:"B", penwidth:10},
       {source:"B", target:"C"},
       ])
     @graph.fontsize = 20

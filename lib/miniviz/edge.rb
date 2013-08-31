@@ -13,6 +13,7 @@ class Miniviz
       self.source = options[:source] || options["source"]
       self.target = options[:target] || options["target"]
       self.label = options[:label] || options["label"]
+      self.penwidth = options[:penwidth] || options["penwidth"]
     end
 
 
@@ -58,8 +59,14 @@ class Miniviz
     # The label attached to the edge.
     attr_accessor :label
 
+    # The width of the pen, in pixels.
+    attr_accessor :penwidth
+
     # The SVG path.
     attr_accessor :d
+
+    # The width of the stroke on the path.
+    attr_accessor :stroke_width
 
     # The SVG arrowhead polygon points.
     attr_accessor :arrowhead
@@ -112,7 +119,7 @@ class Miniviz
     def to_svg
       output = []
       output << "<g>"
-      output << "<path fill=\"none\" stroke=\"black\" d=\"#{d}\"/>"
+      output << "<path fill=\"none\" stroke=\"black\" stroke-width=\"#{stroke_width}\" d=\"#{d}\"/>"
       output << "<polygon fill=\"black\" stroke=\"black\" points=\"#{arrowhead}\"/>"
       output << "</g>"
       return output.join("\n")
@@ -120,6 +127,7 @@ class Miniviz
 
     def to_graphviz(g)
       self.gv = g.add_edges(self.source_node.gv, self.target_node.gv)
+      self.gv[:penwidth] = self.penwidth unless self.penwidth.nil?
       self.gv
     end
 
@@ -131,12 +139,14 @@ class Miniviz
     def apply_layout(options={})
       if object.is_a?(Hash)
         object["d"] = d
+        object["stroke_width"] = stroke_width || 1
         object["arrowhead"] = arrowhead
       end
     end
 
     def extract_layout_from_svg(element)
       self.d = Miniviz::Svg.d(graph, element.at_css("path")["d"])
+      self.stroke_width = Miniviz::Svg.pt2px(element.at_css("path")["stroke-width"])
       self.arrowhead = Miniviz::Svg.d(graph, element.at_css("polygon")["points"])
       return nil
     end

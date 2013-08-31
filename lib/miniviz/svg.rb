@@ -1,5 +1,11 @@
 class Miniviz
   class Svg
+    # Converts a value from points to pixels.
+    def self.pt2px(value)
+      return nil if value.nil?
+      return value.to_f * PT2PX
+    end
+
     # Normalizes a series of path points.
     def self.d(graph, value)
       value = value.gsub(/\s*([-0-9.]+)([, ]+)([-0-9.]+)\s*/) do
