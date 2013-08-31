@@ -17,6 +17,7 @@ class Miniviz
 
     # Normalizes the x and y attributes on an SVG node.
     def self.xy(graph, element)
+      return nil, nil if element.nil?
       x = ((element["x"].to_f+PADDING) * PT2PX).round(3)
       y = graph.invert_y((element["y"].to_f+PADDING) * PT2PX).round(3)
       return x, y

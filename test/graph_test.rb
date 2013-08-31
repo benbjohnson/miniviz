@@ -27,11 +27,12 @@ class TestGraph < MiniTest::Unit::TestCase
       {id:"C"},
       ])
     @graph.add_edges([
-      {source:"A2", target:"A1", weight:10},
+      {source:"A2", target:"A1", label:"REALLY LONG LABEL!", weight:10},
       {source:"A3.2", target:"A1", penwidth:10, weight:10},
       {source:"A1", target:"B"},
       {source:"B", target:"C"},
       ])
+    @graph.rankdir = "LR"
     @graph.fontsize = 20
     @graph.layout()
     IO.write("/tmp/miniviz.out.svg", @graph.to_svg())
