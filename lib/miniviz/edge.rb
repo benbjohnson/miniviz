@@ -13,6 +13,7 @@ class Miniviz
       self.source = options[:source] || options["source"]
       self.target = options[:target] || options["target"]
       self.label = options[:label] || options["label"]
+      self.weight = options[:weight] || options["weight"]
       self.penwidth = options[:penwidth] || options["penwidth"]
     end
 
@@ -61,6 +62,9 @@ class Miniviz
 
     # The width of the pen, in pixels.
     attr_accessor :penwidth
+
+    # An integer weight used for layout.
+    attr_accessor :weight
 
     # The SVG path.
     attr_accessor :d
@@ -127,7 +131,9 @@ class Miniviz
 
     def to_graphviz(g)
       self.gv = g.add_edges(self.source_node.gv, self.target_node.gv)
+      self.gv[:label] = self.penwidth unless self.penwidth.nil?
       self.gv[:penwidth] = self.penwidth unless self.penwidth.nil?
+      self.gv[:weight] = self.weight.to_i unless self.weight.nil?
       self.gv
     end
 
