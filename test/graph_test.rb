@@ -29,7 +29,7 @@ class TestGraph < MiniTest::Unit::TestCase
     @graph.add_edges([
       {source:"A2", target:"A1", label:"REALLY LONG LABEL!", weight:10},
       {source:"A3.2", target:"A1", penwidth:10, weight:10},
-      {source:"A1", target:"B"},
+      {source:"A1", target:"B", arrowhead:"none"},
       {source:"B", target:"C"},
       ])
     @graph.rankdir = "LR"

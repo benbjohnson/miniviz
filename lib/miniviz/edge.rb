@@ -15,6 +15,7 @@ class Miniviz
       self.label = options[:label] || options["label"]
       self.weight = options[:weight] || options["weight"]
       self.penwidth = options[:penwidth] || options["penwidth"]
+      self.arrowhead = options[:arrowhead] || options["arrowhead"]
     end
 
 
@@ -63,6 +64,9 @@ class Miniviz
     # The width of the pen, in pixels.
     attr_accessor :penwidth
 
+    # The arrowhead shape.
+    attr_accessor :arrowhead
+
     # An integer weight used for layout.
     attr_accessor :weight
 
@@ -73,7 +77,7 @@ class Miniviz
     attr_accessor :stroke_width
 
     # The SVG arrowhead polygon points.
-    attr_accessor :arrowhead
+    attr_accessor :arrowhead_points
 
     # The X coordinate of the edge label.
     attr_accessor :label_x
@@ -133,7 +137,7 @@ class Miniviz
       output = []
       output << "<g>"
       output << "<path fill=\"none\" stroke=\"black\" stroke-width=\"#{stroke_width}\" d=\"#{d}\"/>"
-      output << "<polygon fill=\"black\" stroke=\"black\" points=\"#{arrowhead}\"/>"
+      output << "<polygon fill=\"black\" stroke=\"black\" points=\"#{arrowhead_points}\"/>"
       if label.to_s != ""
         output << "<text text-anchor=\"middle\" x=\"#{label_x}\" y=\"#{label_y}\" font-family=\"#{graph.fontname}\" font-size=\"#{graph.fontsize}pt\">#{label}</text>"
       end
@@ -148,6 +152,7 @@ class Miniviz
       self.gv[:label] = self.label unless self.label.nil?
       self.gv[:penwidth] = self.penwidth unless self.penwidth.nil?
       self.gv[:weight] = self.weight.to_i unless self.weight.nil?
+      self.gv[:arrowhead] = self.arrowhead unless self.arrowhead.nil?
       self.gv
     end
 
@@ -160,7 +165,7 @@ class Miniviz
       if object.is_a?(Hash)
         object["d"] = d
         object["stroke_width"] = stroke_width || 1
-        object["arrowhead"] = arrowhead
+        object["arrowhead_points"] = arrowhead_points
         object["label_x"] = label_x
         object["label_y"] = label_y
       end
@@ -169,7 +174,7 @@ class Miniviz
     def extract_layout_from_svg(element)
       self.d = Miniviz::Svg.d(graph, element.at_css("path")["d"])
       self.stroke_width = Miniviz::Svg.pt2px(element.at_css("path")["stroke-width"])
-      self.arrowhead = Miniviz::Svg.d(graph, element.at_css("polygon")["points"])
+      self.arrowhead_points = element.at_css("polygon") ? Miniviz::Svg.d(graph, element.at_css("polygon")["points"]) : nil
       self.label_x, self.label_y = Miniviz::Svg.xy(graph, element.at_css("text"))
       return nil
     end
