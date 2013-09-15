@@ -11,6 +11,7 @@ class Miniviz
       self.graph = options[:graph] || options["graph"]
       self.id = options[:id] || options["id"]
       self.label = options[:label] || options["label"]
+      self.shape = options[:shape] || options["shape"] || "box"
       self.nodes = []
       self.add_nodes(options[:nodes] || options["nodes"] || [])
     end
@@ -46,6 +47,9 @@ class Miniviz
     # The label used for the node.
     attr_accessor :label
 
+    # The shape used for the node.
+    attr_accessor :shape
+
     # A list of child nodes within this node.
     attr_accessor :nodes
 
@@ -60,6 +64,9 @@ class Miniviz
 
     # The height of the node.
     attr_accessor :height
+
+    # The SVG points used to describe the node shape.
+    attr_accessor :points
 
     # The X coordinate of the node label.
     attr_accessor :label_x
@@ -144,6 +151,7 @@ class Miniviz
       hash['height'] = height unless height.nil?
       hash['label_x'] = label_x unless label_x.nil?
       hash['label_y'] = label_y unless label_y.nil?
+      hash['points'] = points unless points.nil?
       hash['nodes'] = nodes.to_a.map{|n| n.to_hash()} if nodes.to_a.length > 0
       return hash
     end
@@ -158,7 +166,14 @@ class Miniviz
     def to_svg
       output = []
       output << "<g>"
-      output << "<rect fill=\"none\" stroke=\"black\" x=\"#{x}\" y=\"#{y}\" width=\"#{width}\" height=\"#{height}\"/>"
+      case shape
+      when "box" then
+        output << "<rect fill=\"none\" stroke=\"black\" x=\"#{x}\" y=\"#{y}\" width=\"#{width}\" height=\"#{height}\"/>"
+      when "point" then
+        output << "<ellipse fill=\"black\" stroke=\"black\" cx=\"#{x+(width/2)}\" cy=\"#{y+(height/2)}\" rx=\"#{width/2}\" ry=\"#{height/2}\"/>"
+      else
+        output << "<polygon fill=\"none\" stroke=\"black\" x=\"#{x}\" y=\"#{y}\" points=\"#{points}\"/>"
+      end
       output << "<text text-anchor=\"middle\" x=\"#{label_x}\" y=\"#{label_y}\" font-family=\"#{graph.fontname}\" font-size=\"#{graph.fontsize}pt\">#{label || id}</text>"
       output << "</g>"
       nodes.each do |node|
@@ -173,7 +188,7 @@ class Miniviz
         g = self.gv
       else
         self.gv = g.add_nodes(graphviz_id)
-        self.gv[:shape] = "box"
+        self.gv[:shape] = shape
       end
       self.gv[:fontname] = graph.fontname
       self.gv[:fontsize] = graph.fontsize.to_s
@@ -198,6 +213,7 @@ class Miniviz
         object["y"] = y
         object["width"] = width
         object["height"] = height
+        object["points"] = points
         object["label_x"] = label_x
         object["label_y"] = label_y
       end
@@ -208,7 +224,14 @@ class Miniviz
     end
 
     def extract_layout_from_svg(element)
-      self.x, self.y, self.width, self.height = Miniviz::Svg.points_to_rect(graph, element.at_css("polygon")["points"])
+      case shape
+      when "box" then
+        self.x, self.y, self.width, self.height = Miniviz::Svg.points_to_rect(graph, element.at_css("polygon")["points"])
+      when "point" then
+        self.x, self.y, self.width, self.height = Miniviz::Svg.ellipse(graph, element.at_css("ellipse"))
+      else
+        self.x, self.y, self.points = Miniviz::Svg.points(graph, element.at_css("polygon")["points"])
+      end
       self.label_x, self.label_y = Miniviz::Svg.xy(graph, element.at_css("text"))
       return nil
     end

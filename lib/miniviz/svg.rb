@@ -23,6 +23,16 @@ class Miniviz
       return x, y
     end
 
+    # Normalizes the coordinates and size of the ellipse.
+    def self.ellipse(graph, element)
+      return nil, nil, nil, nil if element.nil?
+      cx = ((element["cx"].to_f+PADDING) * PT2PX).round(3)
+      cy = graph.invert_y((element["cy"].to_f+PADDING) * PT2PX).round(3)
+      rx = (element["rx"].to_f * PT2PX).round(3)
+      ry = (element["ry"].to_f * PT2PX).round(3)
+      return cx - rx, cy - ry, rx * 2, ry * 2
+    end
+
     # Normalizes a series of polygon points into a bounding box.
     def self.points_to_rect(graph, value)
       x1, y1, x2, y2 = nil, nil, nil, nil

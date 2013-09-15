@@ -11,7 +11,7 @@ class TestGraph < MiniTest::Unit::TestCase
         id:"A",
         label:"My Cluster",
         nodes:[
-          {id:"A1"},
+          {id:"A1", shape:"point"},
           {id:"A2"},
           {
             id:"A3",
